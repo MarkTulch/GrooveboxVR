@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AudioRecorderManager : MonoBehaviour
 {
-    private List<GameObject> instruments;
+    [SerializeField] private List<GameObject> instruments;
     private bool recordingStatus = false;
     private double loopStartTime;
     private bool running = false;
@@ -61,14 +61,13 @@ public class AudioRecorderManager : MonoBehaviour
         return loopStartTime;
     }
 
-    public GameObject addNewInstrument(RecordedInstrument instrument) {
-        Debug.Log("**********************************Adding new instrument...." + instrument.instrument.name);
-        GameObject child = new GameObject(instrument.instrument.name + " Instrument");
+    public RecordedInstrument addNewInstrument(AudioClip instrument) {
+        Debug.Log("**********************************Adding new instrument...." + instrument.name);
+        GameObject child = new GameObject(instrument.name + " Instrument");
         child.transform.parent = gameObject.transform;
-        child.AddComponent<AudioSource>();
-        RecordedInstrument childInstrument = child.AddComponent<RecordedInstrument>();
-        childInstrument = instrument;
+        RecordedInstrument newRecordedInstrument = child.AddComponent<RecordedInstrument>();
+        newRecordedInstrument.setInstrument(instrument);
         instruments.Add(child);
-        return child;
+        return newRecordedInstrument;
     }
 }

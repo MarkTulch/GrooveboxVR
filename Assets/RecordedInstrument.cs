@@ -13,33 +13,32 @@ public class RecordedInstrument : MonoBehaviour
 
     private AudioRecorderManager recordingManager;
 
-    [SerializeField] private GameObject gameObjectReference;
-    [SerializeField] private RecordedInstrument selfReference;
-
-    public RecordedInstrument(AudioClip instrumentClip) { 
+    public void setInstrument(AudioClip instrumentClip) { 
         instrument = instrumentClip;
+    }
+
+    public /// <summary>
+    /// Start is called on the frame when a script is enabled just before
+    /// any of the Update methods is called the first time.
+    /// </summary>
+    void Start()
+    {
+        oneShotAudioSource = gameObject.AddComponent<AudioSource>();
         clearAllRecordings();
-        addToRecordingManager();
     }
     public void clearAllRecordings() { 
-        Debug.Log("Instrument cleared");
+        Debug.Log("******************Instrument cleared");
         offsetTimestamps = new List<double>();
         audioSources = new List<AudioSource>();
     }
 
-    private void addToRecordingManager() {
-        Debug.Log("******************Finding Input Receiver");
-        recordingManager = GameObject.Find("Input Receiver").GetComponent<AudioRecorderManager>();
-        gameObjectReference = recordingManager.addNewInstrument(this);
-        selfReference = gameObjectReference.GetComponentInChildren<RecordedInstrument>();
-        oneShotAudioSource = gameObjectReference.GetComponentInChildren<AudioSource>();
-    }
-
     public void addNewRecording(AudioSource audioSource, double offset){
         GameObject child = new GameObject(instrument.name);
-        child.transform.parent = gameObjectReference.transform;
-        selfReference.audioSources.Add(child.AddComponent<AudioSource>());
-        selfReference.offsetTimestamps.Add(offset);
+        child.transform.parent = gameObject.transform;
+        AudioSource tempAudioSource = child.AddComponent<AudioSource>();
+        tempAudioSource.clip = instrument;
+        audioSources.Add(tempAudioSource);
+        offsetTimestamps.Add(offset);
     }
 
     public void playOneShot(){
@@ -52,6 +51,7 @@ public class RecordedInstrument : MonoBehaviour
         }
 
         for (int i = 0; i < offsetTimestamps.Count; i++ ) {
+            Debug.Log("Scheduling " + i + " audio source at " + (loopStartTime + offsetTimestamps[i]));
             audioSources[i].PlayScheduled(loopStartTime + offsetTimestamps[i]);
         }
     }

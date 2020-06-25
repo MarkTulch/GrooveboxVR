@@ -12,14 +12,21 @@ public class InstrumentPanel : MonoBehaviour
     private double lastPlayedTimestamp;
     private double clipDuration;
     private bool hasBeenAddedToManager = false;
+    
+    [SerializeField] private GameObject gameObjectReference;
+    [SerializeField] private RecordedInstrument recordedInstrumentReference;
 
     // Start is called before the first frame update
     void Start()
     {
-        recordedInstrument = new RecordedInstrument(instrument);
+        addToRecordingManager();
         lastPlayedTimestamp = AudioSettings.dspTime;
-        recordingManager = GameObject.Find("Input Receiver").GetComponent<AudioRecorderManager>();
         clipDuration = (double) instrument.samples / instrument.frequency;
+    }
+
+    private void addToRecordingManager() {
+        recordingManager = GameObject.Find("Input Receiver").GetComponent<AudioRecorderManager>();
+        recordedInstrument = recordingManager.addNewInstrument(instrument);
     }
 
     // Update is called once per frame
