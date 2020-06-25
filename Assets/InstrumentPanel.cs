@@ -12,6 +12,9 @@ public class InstrumentPanel : MonoBehaviour
     private double lastPlayedTimestamp;
     private double clipDuration;
     private bool hasBeenAddedToManager = false;
+    private int numSteps;
+    private int numPulses;
+    private int numRotation;
     
     [SerializeField] private GameObject gameObjectReference;
     [SerializeField] private RecordedInstrument recordedInstrumentReference;
