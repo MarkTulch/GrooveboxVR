@@ -38,21 +38,21 @@ public class InstrumentPanel : MonoBehaviour
         
     }
 
-    private void OnTriggerEnter() {
-        if ( !isFinishedPlaying() ) { 
-            return;
-        }
+    // private void OnTriggerEnter() {
+    //     if ( !isFinishedPlaying() ) { 
+    //         return;
+    //     }
 
-        lastPlayedTimestamp = AudioSettings.dspTime;
-        recordedInstrument.playOneShot();
+    //     lastPlayedTimestamp = AudioSettings.dspTime;
+    //     recordedInstrument.playOneShot();
 
-        if (recordingManager.isRecording()) {
-            //Add instrument at timestamp to loop
-            double timeElapsed = lastPlayedTimestamp - recordingManager.getStartTime();
-            Debug.Log("********************** Adding New Sound: " + instrument.name + " at offset: " + timeElapsed);
-            recordedInstrument.addNewRecording(audioSource, timeElapsed);
-        }
-    }
+    //     if (recordingManager.isRecording()) {
+    //         //Add instrument at timestamp to loop
+    //         double timeElapsed = lastPlayedTimestamp - recordingManager.getStartTime();
+    //         Debug.Log("********************** Adding New Sound: " + instrument.name + " at offset: " + timeElapsed);
+    //         recordedInstrument.addNewRecording(audioSource, timeElapsed);
+    //     }
+    // }
 
     private bool isFinishedPlaying() {
         return !((AudioSettings.dspTime - lastPlayedTimestamp) < clipDuration);
