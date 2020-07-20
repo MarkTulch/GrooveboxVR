@@ -10,23 +10,28 @@ public class RecordedInstrument : MonoBehaviour
     [SerializeField] private List<int> beatsToPlayOn;
     [SerializeField] private List<int> remainder;
     [SerializeField] private List<int> count;
+    [SerializeField] public int numOfSteps;
+    [SerializeField] private int offset;
     public AudioClip instrument {get; set;}
-    private AudioSource oneShotAudioSource;
 
+    private float volume;
+    [SerializeField] private AudioSource oneShotAudioSource;
     private bool hasBeenAddedToManager = false;
-
-    private AudioRecorderManager recordingManager;
+    private PlayerScheduler playerScheduler;
 
     public void setInstrument(AudioClip instrumentClip) { 
         instrument = instrumentClip;
     }
 
-    public /// <summary>
+    /// <summary>
     /// Start is called on the frame when a script is enabled just before
     /// any of the Update methods is called the first time.
     /// </summary>
-    void Start()
+    public void Start()
     {
+        numOfSteps = 0;
+        offset = 0;
+        volume = 1f;
         oneShotAudioSource = gameObject.AddComponent<AudioSource>();
         beatsToPlayOn = new List<int>();
         clearAllRecordings();
@@ -35,7 +40,6 @@ public class RecordedInstrument : MonoBehaviour
         }
     }
     public void clearAllRecordings() { 
-        Debug.Log("******************Instrument cleared");
         offsetTimestamps = new List<double>();
         audioSources = new List<AudioSource>();
     }
@@ -84,10 +88,23 @@ public class RecordedInstrument : MonoBehaviour
         return output;
     }
 
+    public void setNewVolume(float newVolume){
+        volume = newVolume;
+    }
+
+    public void setNumSteps(int newNumSteps){
+        numOfSteps = newNumSteps;
+    }
+
+    public void setOffset(int newOffset){
+        offset = newOffset;
+    }
+
     public void scheduleAllSounds(double[] beats) {
-        beatsToPlayOn = euclidianRhythmArray(beats.Length, 5, 0);
+        beatsToPlayOn = euclidianRhythmArray(beats.Length, numOfSteps, offset);
         for (int i = 0; i < beats.Length; i++ ) {
             if ( beatsToPlayOn[i] == 1 ) {
+                audioSources[i].volume = volume;
                 audioSources[i].PlayScheduled(beats[i]);
             }
         }

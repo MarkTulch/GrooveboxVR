@@ -5,7 +5,7 @@ using TMPro;
 
 public class RecordStartStop : MonoBehaviour
 {
-    public AudioRecorderManager audioRecorderManager;
+    public PlayerScheduler playerScheduler;
 
     public TMP_Text recordButtonText;
 
@@ -17,9 +17,9 @@ public class RecordStartStop : MonoBehaviour
 
     private void OnTriggerEnter() {
         // Flip between start/stop
-        audioRecorderManager.flipRecordingState();
+        playerScheduler.flipRecordingState();
         // Get current recording state and update appearance
-        switch (audioRecorderManager.isRecording()){
+        switch (playerScheduler.isRecording()){
             case true:
                 recordButtonText.text = "Recording...";
                 break;

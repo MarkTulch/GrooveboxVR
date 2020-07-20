@@ -4,17 +4,13 @@ using UnityEngine;
 
 public class InstrumentPanel : MonoBehaviour
 {
-    // TODO: Figure out a different way to handle the AudioClip input. It is only an array right now because arrays are serializable while AudioClips are not
     [SerializeField] AudioClip instrument;
-    private AudioRecorderManager recordingManager;
+    private PlayerScheduler playerScheduler;
     private RecordedInstrument recordedInstrument;
     private AudioSource audioSource;
     private double lastPlayedTimestamp;
     private double clipDuration;
     private bool hasBeenAddedToManager = false;
-    private int numSteps;
-    private int numPulses;
-    private int numRotation;
     
     [SerializeField] private GameObject gameObjectReference;
     [SerializeField] private RecordedInstrument recordedInstrumentReference;
@@ -27,9 +23,20 @@ public class InstrumentPanel : MonoBehaviour
         clipDuration = (double) instrument.samples / instrument.frequency;
     }
 
+    public void updateVolume(float newVolume){
+        recordedInstrument.setNewVolume(newVolume);
+    }
+    public void updateNumSteps(float newNumSteps){
+        recordedInstrument.setNumSteps((int)newNumSteps);
+    }
+
+    public void updateOffset(float newOffset){
+        recordedInstrument.setOffset((int)newOffset);
+    }
+
     private void addToRecordingManager() {
-        recordingManager = GameObject.Find("Input Receiver").GetComponent<AudioRecorderManager>();
-        recordedInstrument = recordingManager.addNewInstrument(instrument);
+        playerScheduler = GameObject.Find("Player").GetComponent<PlayerScheduler>();
+        recordedInstrument = playerScheduler.addNewInstrument(instrument);
     }
 
     // Update is called once per frame
@@ -38,21 +45,21 @@ public class InstrumentPanel : MonoBehaviour
         
     }
 
-    // private void OnTriggerEnter() {
-    //     if ( !isFinishedPlaying() ) { 
-    //         return;
-    //     }
+    private void OnTriggerEnter() {
+        if ( !isFinishedPlaying() || recordedInstrument.numOfSteps > 0) { 
+            return;
+        }
 
-    //     lastPlayedTimestamp = AudioSettings.dspTime;
-    //     recordedInstrument.playOneShot();
+        lastPlayedTimestamp = AudioSettings.dspTime;
+        recordedInstrument.playOneShot();
 
-    //     if (recordingManager.isRecording()) {
-    //         //Add instrument at timestamp to loop
-    //         double timeElapsed = lastPlayedTimestamp - recordingManager.getStartTime();
-    //         Debug.Log("********************** Adding New Sound: " + instrument.name + " at offset: " + timeElapsed);
-    //         recordedInstrument.addNewRecording(audioSource, timeElapsed);
-    //     }
-    // }
+        // if (recordingManager.isRecording()) {
+        //     //Add instrument at timestamp to loop
+        //     double timeElapsed = lastPlayedTimestamp - recordingManager.getStartTime();
+        //     Debug.Log("********************** Adding New Sound: " + instrument.name + " at offset: " + timeElapsed);
+        //     recordedInstrument.addNewRecording(audioSource, timeElapsed);
+        // }
+    }
 
     private bool isFinishedPlaying() {
         return !((AudioSettings.dspTime - lastPlayedTimestamp) < clipDuration);

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AudioRecorderManager : MonoBehaviour
+public class PlayerScheduler : MonoBehaviour
 {
     [SerializeField] private List<GameObject> instruments;
     [SerializeField] private double[] beats;
@@ -14,7 +14,46 @@ public class AudioRecorderManager : MonoBehaviour
     private double barSequenceLength;
     private RecordedInstrument recordedInstrument;
 
-    public int bpm = 140;
+    // LinkedList<Measures[]> loop;
+    
+    // Update()
+    // if (!isRunning()){ return false;}
+
+    // for each StartTimeObject in StartTimeList {
+    //      tell it to tell its measures to start
+    //      wait until next StartTimeObject.startTime
+    //      StartTimeList.next{}
+    // }
+    
+    // StartTimeObject
+    //      Array of measures
+    //          Each measure plays itself once started
+
+
+
+    // addNewMeasureToChain(measure)
+    // if (adding above or below && is not the new longest measure) {
+    //      totalLengthOfMeasure does not change
+    // } else if { 
+    // } else if {
+
+    // }
+
+
+
+
+
+/*
+
+Coroutines brainstorming
+
+MeasureObject:
+    If told to play by the player:
+        
+
+
+*/
+    public int bpm = 154;
 
     public void flipRecordingState() {
         recordingStatus = !recordingStatus;
