@@ -1,2 +1,2 @@
-# The-Worst-Gameshow-VS
- A Vertical Slice for learning VR. 
+# GrooveboxVR
+For jamming. WIP
