@@ -24,9 +24,9 @@ public class VolumeControl : MonoBehaviour
     }
 
     public void updateRotation(){
-        rotationPercentage = calculateRotationPercentage();
-        parent.updateVolume(rotationPercentage);
-        volumeText.text = (rotationPercentage + "%");
+        // rotationPercentage = calculateRotationPercentage();
+        // parent.updateVolume(rotationPercentage);
+        // volumeText.text = (rotationPercentage + "%");
     }
 
     public int getRotationPercent() {

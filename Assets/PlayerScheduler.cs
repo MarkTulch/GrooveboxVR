@@ -4,56 +4,19 @@ using UnityEngine;
 
 public class PlayerScheduler : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> instruments;
-    [SerializeField] private double[] beats;
+    private static PlayerScheduler _PlayerSchedulerInstance;
+    [SerializeField] private List<InstrumentPanel> instruments;
     private bool recordingStatus = false;
-    private double loopStartTime;
+    private int currentBeat;
+    public double currentBeatStartTime;
+    public double nextBeatStartTime;
     private bool running = false;
     private double beatLength;
     private double barLength;
     private double barSequenceLength;
-    private RecordedInstrument recordedInstrument;
 
-    // LinkedList<Measures[]> loop;
-    
-    // Update()
-    // if (!isRunning()){ return false;}
-
-    // for each StartTimeObject in StartTimeList {
-    //      tell it to tell its measures to start
-    //      wait until next StartTimeObject.startTime
-    //      StartTimeList.next{}
-    // }
-    
-    // StartTimeObject
-    //      Array of measures
-    //          Each measure plays itself once started
-
-
-
-    // addNewMeasureToChain(measure)
-    // if (adding above or below && is not the new longest measure) {
-    //      totalLengthOfMeasure does not change
-    // } else if { 
-    // } else if {
-
-    // }
-
-
-
-
-
-/*
-
-Coroutines brainstorming
-
-MeasureObject:
-    If told to play by the player:
-        
-
-
-*/
-    public int bpm = 154;
+    [SerializeField] public float bpm;
+    public int beatsPerMeasure;
 
     public void flipRecordingState() {
         recordingStatus = !recordingStatus;
@@ -63,25 +26,33 @@ MeasureObject:
         return recordingStatus;
     }
 
+    /// <summary>
+    /// Awake is called when the script instance is being loaded.
+    /// </summary>
+    private void Awake()
+    {
+        if (_PlayerSchedulerInstance != null && _PlayerSchedulerInstance != this) {
+            Destroy(this.gameObject);
+        } else {
+            _PlayerSchedulerInstance = this;
+            DontDestroyOnLoad(this);
+        }
+    }
+
     void Start()
     {
-        Debug.Log("***********************We're starting ok");
+        Debug.Log("***********************PlayerSchedulerStarted");
         running = true;
-        loopStartTime = AudioSettings.dspTime;
-        instruments = new List<GameObject>();
+        currentBeatStartTime = AudioSettings.dspTime;
+        currentBeat = 0;
+        instruments = new List<InstrumentPanel>();
+        beatsPerMeasure = 16;
 
+        bpm = 164;
         // Duration of one beat:
         beatLength = 60d/bpm;
         barLength = beatLength * 4;
         barSequenceLength = barLength * 8;
-    }
-    
-    private void scheduleAllInstruments() {
-        Debug.Log("*********************** Instrument Count:"+  instruments.Count);
-        foreach( GameObject instrument in instruments) {
-            recordedInstrument = instrument.GetComponent<RecordedInstrument>();
-            recordedInstrument.scheduleAllSounds(beats);
-        }
     }
 
     void Update()
@@ -90,33 +61,27 @@ MeasureObject:
             return;
         }
 
-        // Scheduling from the top of the measure 
-        if (( AudioSettings.dspTime - loopStartTime ) >= (beatLength * 8 )) {
-            loopStartTime = AudioSettings.dspTime;
-            calculateBeats();
-            scheduleAllInstruments();
+        if (( AudioSettings.dspTime - currentBeatStartTime) >= (beatLength)) {
+            currentBeat++;
+            currentBeatStartTime = AudioSettings.dspTime;
+            nextBeatStartTime = currentBeatStartTime + beatLength;
         }
     }
 
-    private void calculateBeats() {
-        int numSteps = 8;
-        beats = new double[numSteps];
-        for (int i = 0; i< numSteps; i++ ) {
-            beats[i] = loopStartTime + (beatLength * i);
-        }
+    public double getNextBeatStart() {
+        return nextBeatStartTime;
     }
 
-    public double getStartTime() {
-        return loopStartTime;
+    public int getCurrentBeatInMeasure(){
+        return currentBeat % beatsPerMeasure;
     }
 
-    public RecordedInstrument addNewInstrument(AudioClip instrument) {
-        Debug.Log("**********************************Adding new instrument...." + instrument.name);
-        GameObject child = new GameObject(instrument.name + " Instrument");
-        child.transform.parent = gameObject.transform;
-        RecordedInstrument newRecordedInstrument = child.AddComponent<RecordedInstrument>();
-        newRecordedInstrument.setInstrument(instrument);
-        instruments.Add(child);
-        return newRecordedInstrument;
+    public int getNextBeatInMeasure(){
+        int currBeat = getCurrentBeatInMeasure();
+        return currBeat >= beatsPerMeasure ? 0 : currBeat;
+    }
+
+    public void addNewInstrument(InstrumentPanel instrument) {
+        instruments.Add(instrument);
     }
 }

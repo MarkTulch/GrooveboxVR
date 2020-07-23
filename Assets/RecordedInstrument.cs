@@ -77,7 +77,7 @@ public class RecordedInstrument : MonoBehaviour
         return beatsToPlayOn;
     }
 
-    public List<int> rotateSeq(int rotation){
+    private List<int> rotateSeq(int rotation){
         List<int> output = new List<int>();
         int count = beatsToPlayOn.Count;
         int val = count - rotation;
@@ -98,6 +98,10 @@ public class RecordedInstrument : MonoBehaviour
 
     public void setOffset(int newOffset){
         offset = newOffset;
+    }
+
+    public List<int> getBeatsToColorOn(){
+        return beatsToPlayOn;
     }
 
     public void scheduleAllSounds(double[] beats) {
